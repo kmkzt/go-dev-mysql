@@ -5,21 +5,37 @@ import (
 	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/golang-migrate/migrate/source/file"
 )
+
+// TODO
+// docs > https://github.com/golang-migrate/migrate/tree/master/database/mysql
+// func init() {
+// 	db, _ := sql.Open("mysql", "user:pass@tcp(127.0.0.1:3306)/database")
+// 	defer db.Close()
+// 	driver, _ := mysql.WithInstance(db, &mysql.Config{})
+// 	m, _ := migrate.NewWithDatabaseInstance(
+// 		"file:///migrations",
+// 		"mysql",
+// 		driver,
+// 	)
+
+// 	m.Steps(2)
+// }
 
 func main() {
 	db, err := sql.Open("mysql", "user:pass@tcp(127.0.0.1:3306)/database")
 	if err != nil {
 		panic(err.Error())
 	}
-	defer db.Close() // 関数がリターンする直前に呼び出される
+	defer db.Close()
 
-	rows, err := db.Query("SELECT * FROM users") //
+	rows, err := db.Query("SELECT * FROM users")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	columns, err := rows.Columns() // カラム名を取得
+	columns, err := rows.Columns()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -27,7 +43,6 @@ func main() {
 	values := make([]sql.RawBytes, len(columns))
 
 	//  rows.Scan は引数に `[]interface{}`が必要.
-
 	scanArgs := make([]interface{}, len(values))
 	for i := range values {
 		scanArgs[i] = &values[i]
